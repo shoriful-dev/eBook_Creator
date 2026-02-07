@@ -64,7 +64,7 @@ const DashboardPage = () => {
     const fetchBooks = async () => {
       try {
         const response = await axiosInstance.get(API_PATHS.BOOKS.GET_BOOKS);
-        setBooks(response.data);
+        setBooks(response.data?.books || []);
       } catch (error) {
         toast.error(
           error.response?.data?.message ||
