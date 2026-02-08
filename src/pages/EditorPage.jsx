@@ -68,25 +68,167 @@ const EditorPage = () => {
     setBook(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleChapterChnage = e => {};
+  const handleChapterChnage = e => {
+    const { name, value } = e.target;
+    const updatedChapters = [...book.chapters];
+    updatedChapters[selectedChapterIndex][name] = value;
+    setBook(prev => ({ ...prev, chapters: updatedChapters }));
+  };
 
-  const handleAddChapter = index => {};
+  const handleAddChapter = () => {
+    const newChapter = {
+      title: `Chapter ${book.chapters.length + 1}`,
+      content: '',
+    };
+    const updatedChapters = [...book.chapters, newChapter];
+    setBook(prev => ({ ...prev, chapters: updatedChapters }));
+    setSelectedChapterIndex(updatedChapters.length - 1);
+  };
 
-  const handleDeleteChapter = index => {};
+  const handleDeleteChapter = index => {
+    if(book.chapters.length <= 1) {
+      toast.error('A Book must have at least one chapter.');
+      return;
+    }
+    const updatedChapters = book.chapters.filter((_, i) => i !== index);
+    setBook(prev => ({ ...prev, chapters: updatedChapters }));
+    setSelectedChapterIndex((prevIndex) => prevIndex >= index ? Math.max(0, prevIndex - 1) : prevIndex);
+  };
 
-  const handleReorderChapters = (oldIndex, newIndex) => {};
+  const handleReorderChapters = (oldIndex, newIndex) => {
+    setBook(prev => ({
+      ...prev,
+      chapters: arrayMove(prev.chapters, oldIndex, newIndex),
+    }));
+    setSelectedChapterIndex(newIndex);
+  };
 
-  const handleSaveChanges = async (bookToSave = book, showToast = true) => {};
+  const handleSaveChanges = async (bookToSave = book, showToast = true) => {
+    setIsSaving(true);
+    try {
+      await axiosInstance.put(
+        `${API_PATHS.BOOKS.UPDATE_BOOK}/${bookId}`,
+        bookToSave,
+      );
+      if (showToast) {
+        toast.success('Changes saved successfully!');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to save changes.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
-  const handleCoverImageUpload = async e => {};
+  const handleCoverImageUpload = async e => {
+    const file = e.target.files[0];
+    if(!file) return;
 
-  const handleGenerateOutline = async () => {};
+    const formData = new FormData();
+    formData.append('coverImage', file);
+    setIsUploading(true);
 
-  const handleGenerateChapterContent = async () => {};
+    try {
+      const response = await axiosInstance.put(
+        `${API_PATHS.BOOKS.UPDATE_COVER}/${bookId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      setBook(response.data);
+      toast.success('Cover image uploaded successfully!');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to upload cover image.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-  const handleExportPDF = async () => {};
+  const handleGenerateChapterContent = async (index) => {
+    const chapter = book.chapters[index];
+    if(!chapter || !chapter.title) {
+      toast.error('Chapter title is required to generate content.');
+      return;
+    }
+    setIsGenerating(index);
+    try {
+      const response = await axiosInstance.post(
+        API_PATHS.AI.GENERATE_CHAPTER_CONTENT,
+        {
+          chapterTitle: chapter.title,
+          chapterDescription: chapter.description || '',
+          style: aiStyle,
+        },
+      );
+      const updatedChapters = [...book.chapters];
+      updatedChapters[index].content = response.data.content;
+      
+      const updatedBook = {
+        ...book,
+        chapters: updatedChapters,
+      };
 
-  const handleExportDoc = async () => {};
+      setBook(updatedBook);
+      toast.success(`Content for "${chapter.title}" generated successfully!`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to generate chapter content.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    toast.loading('Generating PDF...');
+    try {
+      const response = await axiosInstance.get(
+        `${API_PATHS.EXPORT.PDF}/${bookId}/pdf`,
+        {
+          responseType: 'blob',
+        },
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${book.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.dismiss();
+      toast.success('PDF export started!');
+    } catch (error) {
+      toast.dismiss();
+      toast.error(error.response?.data?.message || 'Failed to export PDF.');
+    } 
+  };
+
+  const handleExportDoc = async () => {
+    toast.loading('Generating Document...');
+    try {
+      const response = await axiosInstance.get(
+        `${API_PATHS.EXPORT.DOC}/${bookId}/doc`,
+        {
+          responseType: 'blob',
+        },
+      );
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${book.title}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.dismiss();
+      toast.success('Document export started!');
+    } catch (error) {
+      toast.dismiss();
+      toast.error(error.response?.data?.message || 'Failed to export Document.');
+    }
+  };
 
   if (isLoading || !book) {
     return (
@@ -219,17 +361,17 @@ const EditorPage = () => {
               <ChapterEditorTab
                 book={book}
                 selectedChapterIndex={selectedChapterIndex}
-                onChapterChange={handleChapterChange}
+                onChapterChange={handleChapterChnage}
                 onGenerateChapterContent={handleGenerateChapterContent}
                 isGenerating={isGenerating}
               />
             ) : (
-              <BookDetailsTab 
-               book={book}
-               onBookChange={handleBookChange}
-               onCoverUpload={handleCoverImageUpload}
-               isUploading={isUploading}
-               fileInputRef={fileInputRef}
+              <BookDetailsTab
+                book={book}
+                onBookChange={handleBookChnage}
+                onCoverUpload={handleCoverImageUpload}
+                isUploading={isUploading}
+                fileInputRef={fileInputRef}
               />
             )}
           </div>
