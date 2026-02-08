@@ -22,6 +22,8 @@ import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
 import SelectField from '../components/ui/SelectField';
 import ChapterSidebar from '../components/editor/ChapterSidebar';
+import ChapterEditorTab from '../components/editor/ChapterEditorTab';
+import BookDetailsTab from '../components/editor/BookDetailsTab';
 
 const EditorPage = () => {
   const { bookId } = useParams();
@@ -99,7 +101,11 @@ const EditorPage = () => {
       <div className="flex bg-slate-50 font-sans relative min-h-screen">
         {/* Mobile Sidebar */}
         {isSidebarOpen && (
-          <div className="fixed inset-0 z-40 flex md:hidden" role="dialog" aria-modal="true">
+          <div
+            className="fixed inset-0 z-40 flex md:hidden"
+            role="dialog"
+            aria-modal="true"
+          >
             <div
               className="fixed inset-0 bg-black/20 bg-opacity-75"
               aria-hidden="true"
@@ -119,7 +125,7 @@ const EditorPage = () => {
               <ChapterSidebar
                 book={book}
                 selectedChapterIndex={selectedChapterIndex}
-                onSelectChapter={(index) => {
+                onSelectChapter={index => {
                   setSelectedChapterIndex(index);
                   setIsSidebarOpen(false);
                 }}
@@ -133,6 +139,101 @@ const EditorPage = () => {
             <div className="flex shrink-0 w-14" aria-hidden="true"></div>
           </div>
         )}
+
+        {/* Desktop Sidebar */}
+        <div className="hidden md:flex md:shrink-0 sticky top-0 h-screen">
+          <ChapterSidebar
+            book={book}
+            selectedChapterIndex={selectedChapterIndex}
+            onSelectChapter={index => {
+              selectedChapterIndex(index);
+              setIsSidebarOpen(false);
+            }}
+            onAddChapter={handleAddChapter}
+            onDeleteChapter={handleDeleteChapter}
+            onGenerateChapterContent={handleGenerateChapterContent}
+            isGenerating={isGenerating}
+            onReorderChapters={handleReorderChapters}
+          />
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 h-full flex flex-col">
+          <header className="sticky top-0 z-10 bg-white/80 backdrop:blur-sm p-3 flex items-center justify-between border-b border-slate-200">
+            <div className="flex items-center gap-2">
+              <button
+                className="md:hidden p-2 text-slate-500 hover:text-slate-800"
+                onClick={() => setIsSidebarOpen(true)}
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <div className="hidden sm:flex space-x-1 bg-slate-100 p-1 rounded-lg">
+                <button
+                  onClick={() => setActiveTab('editor')}
+                  className={`flex items-center justify-center flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 ${activeTab === 'editor' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Editor
+                </button>
+                <button
+                  onClick={() => setActiveTab('details')}
+                  className={`flex items-center justify-center flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors duration-200 whitespace-nowrap ${activeTab === 'details' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  <NotebookText className="w-4 h-4 mr-2" />
+                  Book Details
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Dropdown
+                trigger={
+                  <Button variant="secondary" icon={FileDown}>
+                    Export
+                    <ChevronDown className="w-4 h-4 ml-1" />
+                  </Button>
+                }
+              >
+                <DropdownItem onClick={handleExportPDF}>
+                  <FileText className="w-4 h-4 mr-2 text-slate-500" />
+                  Export as PDF
+                </DropdownItem>
+                <DropdownItem onClick={handleExportDoc}>
+                  <FileText className="w-4 h-4 mr-2 text-slate-500" />
+                  Export as Document
+                </DropdownItem>
+              </Dropdown>
+
+              <Button
+                onClick={handleSaveChanges()}
+                isLoading={isSaving}
+                icon={Save}
+              >
+                Save Changes
+              </Button>
+            </div>
+          </header>
+
+          <div className="w-full">
+            {activeTab === 'editor' ? (
+              <ChapterEditorTab
+                book={book}
+                selectedChapterIndex={selectedChapterIndex}
+                onChapterChange={handleChapterChange}
+                onGenerateChapterContent={handleGenerateChapterContent}
+                isGenerating={isGenerating}
+              />
+            ) : (
+              <BookDetailsTab 
+               book={book}
+               onBookChange={handleBookChange}
+               onCoverUpload={handleCoverImageUpload}
+               isUploading={isUploading}
+               fileInputRef={fileInputRef}
+              />
+            )}
+          </div>
+        </main>
       </div>
     </>
   );
