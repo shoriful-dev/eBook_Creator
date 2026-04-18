@@ -68,7 +68,7 @@ const Hero = () => {
             <div className="relative">
               <div className="absolute -inset-4 bg-linear-to-r from-violet-600 to-purple-600 rounded-3xl blur-2xl opacity-20"></div>
               <div className="relative bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
-                <img src={HERO_IMG} alt="banner" className="w-full h-auto" />
+                <img src={HERO_IMG} alt="AI eBook Creator Platform Dashboard Preview" className="w-full h-auto" />
 
                 <div className="absolute top-6 right-6 bg-white rounded-2xl shadow-xl p-4 backdrop:blur-sm border border-gray-100 animate-in fade-in slide-in-from-right duration-700">
                   <div className="flex items-center space-x-3">

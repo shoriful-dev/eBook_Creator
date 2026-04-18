@@ -10,7 +10,7 @@ import Footer from '../components/landing/Footer';
 const LandingPage = () => {
   return (
     <>
-      <div>
+      <main className="overflow-hidden">
         <Navber />
         <Hero />
         <HowItWorks />
@@ -19,7 +19,7 @@ const LandingPage = () => {
         <Pricing />
         <FAQ />
         <Footer />
-      </div>
+      </main>
     </>
   );
 };
