@@ -10,8 +10,8 @@ import Footer from '../components/landing/Footer';
 const LandingPage = () => {
   return (
     <>
-      <main className="overflow-hidden">
-        <Navber />
+      <Navber />
+      <main className="overflow-x-hidden">
         <Hero />
         <HowItWorks />
         <Features />
