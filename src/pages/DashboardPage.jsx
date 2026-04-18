@@ -58,7 +58,26 @@ const DashboardPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [bookToDelete, setBookToDelete] = useState(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const paymentStatus = queryParams.get('payment');
+    
+    if (paymentStatus) {
+      if (paymentStatus === 'success') {
+        toast.success('Congratulations! Your Pro membership is now active.');
+        refreshUser();
+      } else if (paymentStatus === 'fail') {
+        toast.error('Payment failed. Please try again.');
+      } else if (paymentStatus === 'cancel') {
+        toast.error('Payment cancelled.');
+      }
+      
+      // Clean up the URL to prevent repeated toasts on re-renders
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [refreshUser]);
 
   useEffect(() => {
     const fetchBooks = async () => {

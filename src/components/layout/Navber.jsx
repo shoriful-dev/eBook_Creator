@@ -11,7 +11,10 @@ const Navber = () => {
   const [profileDropdownMenu, setProfileDropdownMenu] = useState(false);
 
   const navLinks = [
+    { name: 'How It Works', href: '#how-it-works' },
     { name: 'Features', href: '#features' },
+    { name: 'Pricing', href: '#pricing' },
+    { name: 'FAQ', href: '#faq' },
     { name: 'Testimonials', href: '#testimonials' },
   ];
 
@@ -33,11 +36,15 @@ const Navber = () => {
   }, [profileDropdownMenu]);
 
   return (
-    <header>
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2.5 group">
+          <Link 
+            to="/" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center space-x-2.5 group"
+          >
             <div className="w-9 h-9 bg-linear-to-br from-violet-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-all duration-300 group-hover:scale-105">
               <BookOpen className="w-5 h-5 text-white" />
             </div>

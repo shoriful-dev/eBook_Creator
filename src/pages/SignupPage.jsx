@@ -12,7 +12,6 @@ import { API_PATHS } from "../utils/apiPaths";
 const SignupPage = () => {
   const [formData, setformData] = useState({ name: "", email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,16 +22,9 @@ const SignupPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, formData);
-      const { token } = response.data;
-      const profileResponse = await axiosInstance.get(API_PATHS.AUTH.PROFILE, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      login(profileResponse.data, token);
-      toast.success("Account created successfully");
-      navigate("/dashboard");
+      await axiosInstance.post(API_PATHS.AUTH.REGISTER, formData);
+      toast.success("Account created successfully. Please login.");
+      navigate("/login");
     } catch (error) {
       toast.error(error.response?.data?.message || 'Signup failed. Please try again.');
     } finally {

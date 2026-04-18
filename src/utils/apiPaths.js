@@ -23,4 +23,7 @@ export const API_PATHS = {
     PDF: '/api/export',
     DOC: '/api/export',
   },
+  PAYMENTS: {
+    INIT: '/api/payment/init',
+  },
 };

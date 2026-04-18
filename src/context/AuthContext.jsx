@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import {createContext} from 'react';
+import { BASE_URL } from '../utils/apiPaths';
 
 
 const AuthContext = createContext();
@@ -38,6 +39,28 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      // Import axios instance dynamically or use it if available
+      // For simplicity in AuthProvider, we can use fetch or a standard axios import if we avoid circular deps
+      // Since axialInstance is usually defined elsewhere, we'll assume it's safe to use or add a simple fetch
+      const response = await fetch(`${BASE_URL}/api/auth/profile`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('user', JSON.stringify(data));
+        setUser(data);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
+  };
   
   const login = (userData, token) => {
     localStorage.setItem('token', token);
@@ -67,6 +90,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    refreshUser,
     checkAuthStatus
   };
 

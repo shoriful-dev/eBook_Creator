@@ -71,28 +71,7 @@ const Features = () => {
           })}
         </div>
 
-        <div className="text-center mt-16">
-          <p className='text-gray-600 mb-6'>Ready to get started?</p>
-          <Link
-            to={isAuthenticated ? "/dashboard" : "/signup"}
-            className='inline-flex items-center space-x-2 bg-linear-to-r from-violet-600 to-purple-600 px-8 py-4 rounded-xl text-white font-semibold shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-105 transition-all duration-200'
-          >
-            <span>{isAuthenticated ? "Go to Dashboard" : "Start Creating Today"}</span>
-            <svg
-              className='w-5 h-5'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M13 7l5 5m0 0l-5 5m5-5H6'
-              />
-            </svg>
-          </Link>
-        </div>
+
       </div>
     </div>
   );
