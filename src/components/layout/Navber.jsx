@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, BookOpen, LogOut } from 'lucide-react';
+import { Menu, X, BookOpen, LogOut, Library } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
@@ -67,18 +67,28 @@ const Navber = () => {
           {/* Auth Buttons & Profile */}
           <div className="hidden lg:flex items-center space-x-3">
             {isAuthenticated ? (
-              <ProfileDropdown
-                isOpen={profileDropdownMenu}
-                onToggle={e => {
-                  e.stopPropagation();
-                  setProfileDropdownMenu(!profileDropdownMenu);
-                }}
-                avatar={avatarUrl}
-                companyName={user?.name || ''}
-                email={user?.email || ''}
-                userRole={user?.role || ''}
-                onLogout={logout}
-              />
+              <>
+                <Link
+                  to="/dashboard"
+                  title="My eBooks — your library and editor. Continue where you left off."
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-semibold text-violet-700 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors duration-200"
+                >
+                  <Library className="w-3.5 h-3.5 shrink-0 text-violet-600" aria-hidden />
+                  My eBooks
+                </Link>
+                <ProfileDropdown
+                  isOpen={profileDropdownMenu}
+                  onToggle={e => {
+                    e.stopPropagation();
+                    setProfileDropdownMenu(!profileDropdownMenu);
+                  }}
+                  avatar={avatarUrl}
+                  companyName={user?.name || ''}
+                  email={user?.email || ''}
+                  userRole={user?.role || ''}
+                  onLogout={logout}
+                />
+              </>
             ) : (
               <>
                 <a
@@ -144,6 +154,15 @@ const Navber = () => {
                     <div className="text-xs text-gray-500">{user?.email}</div>
                   </div>
                 </div>
+                <Link
+                  to="/dashboard"
+                  title="My eBooks — your library and editor. Continue where you left off."
+                  onClick={() => setOpen(false)}
+                  className="flex w-full items-center gap-2 px-4 py-2.5 text-sm font-semibold text-violet-700 border border-violet-200 rounded-lg hover:bg-violet-50 transition-colors duration-200"
+                >
+                  <Library className="w-4 h-4 shrink-0 text-violet-600" aria-hidden />
+                  My eBooks
+                </Link>
                 <button
                   onClick={() => logout()}
                   className="w-full px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2"
