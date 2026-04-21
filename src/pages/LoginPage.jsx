@@ -23,14 +23,13 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, formData);
-      const {token} = response.data;
+      const { token, user: initialUser } = response.data;
 
-      // fetch profile to get user details
-      const profileResponse = await axiosInstance.get(API_PATHS.AUTH.PROFILE, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        }
-      });
+      // Store token immediately so axiosInstance interceptor can use it for the profile request
+      localStorage.setItem('token', token);
+
+      // fetch profile to get fresh user details (contains full data like planExpiry etc)
+      const profileResponse = await axiosInstance.get(API_PATHS.AUTH.PROFILE);
 
       login(profileResponse.data, token);
       toast.success('Login successful');

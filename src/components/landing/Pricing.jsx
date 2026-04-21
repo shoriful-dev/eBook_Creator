@@ -5,13 +5,16 @@ import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import toast from 'react-hot-toast';
 
+import { useNavigate } from 'react-router-dom';
+
 const Pricing = () => {
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleUpgrade = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to upgrade');
+      navigate('/login');
       return;
     }
 

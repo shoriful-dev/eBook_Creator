@@ -12,6 +12,7 @@ import { API_PATHS } from "../utils/apiPaths";
 const SignupPage = () => {
   const [formData, setformData] = useState({ name: "", email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,9 +23,14 @@ const SignupPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axiosInstance.post(API_PATHS.AUTH.REGISTER, formData);
-      toast.success("Account created successfully. Please login.");
-      navigate("/login");
+      const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, formData);
+      const { token, user } = response.data;
+      
+      // Auto-login after signup
+      login(user, token);
+      
+      toast.success("Account created successfully!");
+      navigate("/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || 'Signup failed. Please try again.');
     } finally {

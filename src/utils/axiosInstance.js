@@ -26,10 +26,14 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 500) {
-      console.error('Server error occurred, please try again later.');
-    } else if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out, please try again.');
+    if (error.response) {
+      // Server responded with an error
+      console.error(`API Error (${error.response.status}):`, error.response.data?.message || error.message);
+    } else if (error.request) {
+      // Request was made but no response received
+      console.error('Network Error: No response received from server. Check if backend is running and CORS allows this origin.');
+    } else {
+      console.error('Request Setup Error:', error.message);
     }
     return Promise.reject(error);
   },
