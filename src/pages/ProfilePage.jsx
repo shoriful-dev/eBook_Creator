@@ -83,7 +83,7 @@ const ProfilePage = () => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith('http')
       ? user.avatar
-      : `${BASE_URL}/backend/${user.avatar}`.replace(/\\/g, '/')
+      : `${BASE_URL}/${user.avatar}`.replace(/\\/g, '/')
     : '';
 
   return (

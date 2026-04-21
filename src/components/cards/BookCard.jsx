@@ -9,7 +9,7 @@ const BookCard = ({ book, onDelete }) => {
   const coverImageUrl = book.coverImage
     ? book.coverImage.startsWith('http')
       ? book.coverImage
-      : `${BASE_URL}/backend/${book.coverImage}`.replace(/\\/g, '/')
+      : `${BASE_URL}/${book.coverImage}`.replace(/\\/g, '/')
     : 'https://via.placeholder.com/600x800?text=No+Cover+Image';
 
   return (

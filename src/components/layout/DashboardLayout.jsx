@@ -13,7 +13,7 @@ const DashboardLayout = ({ children }) => {
   const avatarUrl = user?.avatar
     ? user.avatar.startsWith('http')
       ? user.avatar
-      : `${BASE_URL}/backend/${user.avatar}`.replace(/\\/g, '/')
+      : `${BASE_URL}/${user.avatar}`.replace(/\\/g, '/')
     : '';
 
   // Close Dropdowns when clicking outside
